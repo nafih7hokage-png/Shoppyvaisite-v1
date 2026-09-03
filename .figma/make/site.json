@@ -1,0 +1,8 @@
+{
+  "title": "Shoppyvai - Your Friendly Online Store",
+  "description": "Smart, fast and reliable shopping for electronics, fashion, groceries, and home goods.",
+  "language": "en",
+  "accessibility": {
+    "addBypassLinks": true
+  }
+}
