@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Product, Currency, Order, CartItem } from "../types";
 import { formatPrice } from "../utils/currency";
+import { generateSecureId, sanitizeText } from "../utils/security";
 
 interface ExpressBuyNowPageProps {
   product: Product;
@@ -123,7 +124,7 @@ export const ExpressBuyNowPage: React.FC<ExpressBuyNowPageProps> = ({
       return;
     }
 
-    const orderId = `SV-${Math.floor(100000 + Math.random() * 900000)}`;
+    const secureOrderId = generateSecureId("SV");
     const cartItem: CartItem = {
       id: `${product.id}-${selectedVariant || "default"}`,
       product,
@@ -131,8 +132,14 @@ export const ExpressBuyNowPage: React.FC<ExpressBuyNowPageProps> = ({
       selectedVariant: selectedVariant || undefined,
     };
 
+    const sanitizedFullName = sanitizeText(fullName, 80);
+    const sanitizedPhone = sanitizeText(phone, 30);
+    const sanitizedAddress = sanitizeText(address, 220);
+    const sanitizedCity = sanitizeText(city, 60);
+    const sanitizedNotes = sanitizeText(deliveryNotes, 220);
+
     const newOrder: Order = {
-      id: orderId,
+      id: secureOrderId,
       date: new Date().toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -148,11 +155,11 @@ export const ExpressBuyNowPage: React.FC<ExpressBuyNowPageProps> = ({
       currency,
       status: "Processing",
       shippingDetails: {
-        fullName: fullName.trim(),
-        phone: phone.trim(),
-        address: address.trim(),
-        city: city.trim(),
-        notes: deliveryNotes.trim() || undefined,
+        fullName: sanitizedFullName,
+        phone: sanitizedPhone,
+        address: sanitizedAddress,
+        city: sanitizedCity,
+        notes: sanitizedNotes || undefined,
       },
       paymentMethod,
     };

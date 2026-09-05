@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { CartItem, Currency, Coupon, Order } from "../types";
 import { formatPrice } from "../utils/currency";
+import { generateSecureId, sanitizeText } from "../utils/security";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -39,15 +40,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   );
 
   // Form states
-  const [fullName, setFullName] = useState("Nafih Chowdhury");
-  const [phone, setPhone] = useState("+880 1712-345678");
-  const [email, setEmail] = useState("nafih@example.com");
-  const [address, setAddress] = useState("House 42, Road 7/A, Dhanmondi");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
   const [city, setCity] = useState("Dhaka");
-  const [postalCode, setPostalCode] = useState("1209");
-  const [deliveryNotes, setDeliveryNotes] = useState(
-    "Call before ringing bell.",
-  );
+  const [postalCode, setPostalCode] = useState("");
+  const [deliveryNotes, setDeliveryNotes] = useState("");
 
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethodType>("bKash");
@@ -72,9 +71,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const handleConfirmOrder = () => {
-    const randomOrderId = `SV-${Math.floor(100000 + Math.random() * 900000)}`;
+    const sanitizedFullName = sanitizeText(fullName, 80);
+    const sanitizedPhone = sanitizeText(phone, 30);
+    const sanitizedEmail = sanitizeText(email, 120);
+    const sanitizedAddress = sanitizeText(address, 220);
+    const sanitizedCity = sanitizeText(city, 60);
+    const sanitizedPostalCode = sanitizeText(postalCode, 20);
+    const sanitizedNotes = sanitizeText(deliveryNotes, 220);
+    const secureOrderId = generateSecureId("SV");
+
     const newOrder: Order = {
-      id: randomOrderId,
+      id: secureOrderId,
       date: new Date().toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -90,13 +97,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       currency,
       status: "Processing",
       shippingDetails: {
-        fullName,
-        phone,
-        email,
-        address,
-        city,
-        postalCode,
-        notes: deliveryNotes,
+        fullName: sanitizedFullName,
+        phone: sanitizedPhone,
+        email: sanitizedEmail || undefined,
+        address: sanitizedAddress,
+        city: sanitizedCity,
+        postalCode: sanitizedPostalCode || undefined,
+        notes: sanitizedNotes || undefined,
       },
       paymentMethod,
     };

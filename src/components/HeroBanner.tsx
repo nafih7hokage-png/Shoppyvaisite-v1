@@ -11,6 +11,7 @@ import {
   Check,
 } from "lucide-react";
 import { Currency } from "../types";
+import { copyTextSecurely } from "../utils/security";
 
 interface HeroBannerProps {
   onShopNow: (category?: string) => void;
@@ -51,13 +52,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  const handleCopy = (code: string) => {
+  const handleCopy = async (code: string) => {
     if (onCopyCoupon) {
       onCopyCoupon(code);
     }
-    navigator.clipboard?.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2500);
+
+    const copied = await copyTextSecurely(code);
+    if (copied) {
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 2500);
+    }
   };
 
   return (
