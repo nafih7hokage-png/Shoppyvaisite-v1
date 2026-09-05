@@ -33,6 +33,7 @@ import { OrderHistoryModal } from './components/OrderHistoryModal';
 import { Footer } from './components/Footer';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { formatPrice } from './utils/currency';
+import { generateSecureId } from './utils/security';
 
 export function App() {
   // Navigation View State: 'catalog' or 'buy-now'
@@ -70,7 +71,7 @@ export function App() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (type: 'success' | 'error' | 'info', title: string, message: string) => {
-    const id = `${Date.now()}-${Math.random()}`;
+    const id = generateSecureId('toast');
     setToasts((prev) => [...prev, { id, type, title, message }]);
   };
 
@@ -356,7 +357,15 @@ export function App() {
                   <span className="text-slate-500 font-medium hidden sm:inline">Sort:</span>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
+                    onChange={(e) =>
+                      setSortBy(
+                        e.target.value as
+                          | 'featured'
+                          | 'price-asc'
+                          | 'price-desc'
+                          | 'discount'
+                      )
+                    }
                     className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-orange-500 shadow-xs cursor-pointer"
                   >
                     <option value="featured">Featured Deals</option>
